@@ -11,21 +11,22 @@ fd_db = cell(1);
 figure();
 for im = 1:numel(img_db_list);
     img_db{im} = logical(imread(img_db_list{im}));
-    %Barycentre
-   	[X,Y]=find(img_db{im}==1);
     
-    A=round(mean(X));
-    B=round(mean(Y));
-    v1=[X,Y];
+    %Barycentre
+   	[bary_x, bary_y]=find(img_db{im}==1);
+    X=round(mean(bary_x));
+    Y=round(mean(bary_y));
+
     label_db{im} = get_label(img_db_list{im});
     clf;imshow(img_db{im});
     
     hold on;
-    plot(B,A,'*r');
-    v2=round(imcontour(img_db{im},3));
+    plot(Y,X,'+r');
     
-    d = sqrt(sum( (v1 - v2).^2 ));
-    disp(d);
+    %getSignature(X(1), Y(1),img_db{im});
+    
+    getSignature(X, Y, img_db{im});
+    
     disp(label_db{im});
     drawnow();
     waitforbuttonpress
