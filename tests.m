@@ -29,5 +29,5 @@ for im = 1:numel(img_db_list);
     
     disp(label_db{im});
     drawnow();
-    waitforbuttonpress
+    %waitforbuttonpress
 end
