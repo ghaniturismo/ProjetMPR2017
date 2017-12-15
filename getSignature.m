@@ -1,26 +1,26 @@
-function [r, teta, pointContourX, pointContourY] = getSignature(XCentre, YCentre, img)
+function [k,pointContourX, pointContourY] = getSignature(XCentre, YCentre, img,teta)
+    k=0;
     r=[];
-    teta=[];
     pointContourX = [];
     pointContourY = [];
-    for VTheta = 0:pi/15:2*pi % 0:10:360
-        % VTheta = VThetaDeg *pi / 180;
+    tmpXC=0;
+    tmpYC=0;
+    for pasTeta = 0:teta:2*pi % 0:10:360
         
         % Cherche le point du contour
         i = 1;
         
-        while ( round(XCentre + i * cos(VTheta)) < size(img, 1) && round(XCentre + i * cos(VTheta)) > 0 ) && ( round(YCentre + i * sin(VTheta)) < size(img, 2) && round(YCentre + i * sin(VTheta)) > 0 ) && ( img(round(XCentre + i * cos(VTheta)), round(YCentre + i * sin(VTheta))) == 1 )
-            i = i + 5; % pas du deplacement sur la droite pour aller au contour
-            round(XCentre + i * cos(VTheta));
-            round(YCentre + i * sin(VTheta));
-            
+        while ( round(XCentre + i * cos(pasTeta)) < size(img, 1) && round(XCentre + i * cos(pasTeta)) > 0 ) && ( round(YCentre + i * sin(pasTeta)) < size(img, 2) && round(YCentre + i * sin(pasTeta)) > 0 ) && ( img(round(XCentre + i * cos(pasTeta)), round(YCentre + i * sin(pasTeta))) == 1 )
+              
+            i = i + 1; % pas du deplacement sur la droite pour aller au contour
+            tmpXC = round(XCentre + i * cos(pasTeta));
+            tmpYC = round(YCentre + i * sin(pasTeta));   
         end
                 
-        pointContourX(end+1) = XCentre + i * cos(VTheta);
-        pointContourY(end+1) = YCentre + i * sin(VTheta);
-        %plot(pointContourY, pointContourX, '* R');
-        r=[r,distanceAuBaricentre(img, XCentre, YCentre, VTheta)];
-        teta=[teta, VTheta];
+        pointContourX(end+1) = tmpXC;
+        pointContourY(end+1) = tmpYC;
         
+        k=[r,dist_euclide_Baricentre(XCentre, YCentre,pointContourX,pointContourY)];
     end
+    
 end

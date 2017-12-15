@@ -9,23 +9,38 @@ img_db = cell(1);
 label_db = cell(1);
 fd_db = cell(1);
 figure();
+
+teta = pi/8;
+pasTeta = 0:teta:2*pi;
+
 for im = 1:numel(img_db_list);
     img_db{im} = logical(imread(img_db_list{im}));
-    
+
     %Barycentre
    	[bary_x, bary_y]=find(img_db{im}==1);
     X=round(mean(bary_x));
     Y=round(mean(bary_y));
 
     label_db{im} = get_label(img_db_list{im});
-    clf;imshow(img_db{im});
-    
-    hold on;
-    plot(Y,X,'+r');
-    
-    getSignature(X, Y, img_db{im});
-    
+    clf;
     disp(label_db{im});
+    subplot(2,2,1);
+        [r, pCX, pCY]=getSignature(X, Y, img_db{im},teta);
+        plot(pasTeta, r);
+        title('Signature');
+    
+    subplot(2,2,2);
+        imshow(img_db{im}); hold on;
+        plot(pCY, pCX, '+B');% Les points du countours en Bleu
+        plot(Y,X, '*G');     % Le barycentre en vert
+        title('Image');
+    
+    subplot(2,2,4);
+        [d]=descripteur(r);
+        plot(pasTeta, d);
+        title('Descripteur');
+        
+        
     drawnow();
     waitforbuttonpress
 end
