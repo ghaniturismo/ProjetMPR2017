@@ -23,11 +23,9 @@ for im = 1:numel(img_db_list);
     hold on;
     plot(Y,X,'+r');
     
-    %getSignature(X(1), Y(1),img_db{im});
-    
     getSignature(X, Y, img_db{im});
     
     disp(label_db{im});
     drawnow();
-    %waitforbuttonpress
+    waitforbuttonpress
 end

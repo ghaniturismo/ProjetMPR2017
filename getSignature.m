@@ -1,12 +1,11 @@
-function [r, teta] = getSignature(XCentre, YCentre, img)
+function [r, teta, pointContourX, pointContourY] = getSignature(XCentre, YCentre, img)
     r=[];
     teta=[];
     pointContourX = [];
     pointContourY = [];
-
     for VTheta = 0:pi/15:2*pi % 0:10:360
         % VTheta = VThetaDeg *pi / 180;
-          
+        
         % Cherche le point du contour
         i = 1;
         
@@ -16,18 +15,12 @@ function [r, teta] = getSignature(XCentre, YCentre, img)
             round(YCentre + i * sin(VTheta));
             
         end
-        
-        
+                
         pointContourX(end+1) = XCentre + i * cos(VTheta);
         pointContourY(end+1) = YCentre + i * sin(VTheta);
-        plot(pointContourY, pointContourX, '* R');
-        r=distanceAuBaricentre(img, XCentre, YCentre, VTheta);
-        teta=VTheta;
+        %plot(pointContourY, pointContourX, '* R');
+        r=[r,distanceAuBaricentre(img, XCentre, YCentre, VTheta)];
+        teta=[teta, VTheta];
         
     end
-    
-    
-    %imshow(img);
-    hold on;
-    plot(pointContourY, pointContourX, 'g');
 end
