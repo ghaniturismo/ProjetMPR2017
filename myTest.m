@@ -1,7 +1,7 @@
 function  myTest()
 im = logical(imread('./db/brick-20.gif'));
 
-teta = pi/2;
+teta = pi/4;
 
     
 subplot(2,2,1);
@@ -26,7 +26,7 @@ subplot(2,2,2);
     
 subplot(2,2,4);
         [d]=descripteur(r);
-        plot(pasTeta, d);
+        plot(d);
         title('Descripteur');
 
 end

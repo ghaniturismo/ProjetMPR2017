@@ -10,7 +10,7 @@ label_db = cell(1);
 fd_db = cell(1);
 figure();
 
-teta = pi/8;
+teta = pi/34;
 pasTeta = 0:teta:2*pi;
 
 for im = 1:numel(img_db_list);
@@ -26,7 +26,7 @@ for im = 1:numel(img_db_list);
     disp(label_db{im});
     subplot(2,2,1);
         [r, pCX, pCY]=getSignature(X, Y, img_db{im},teta);
-        plot(pasTeta, r);
+        plot(r);
         title('Signature');
     
     subplot(2,2,2);
@@ -35,9 +35,9 @@ for im = 1:numel(img_db_list);
         plot(Y,X, '*G');     % Le barycentre en vert
         title('Image');
     
-    subplot(2,2,4);
+    subplot(2,2,3);
         [d]=descripteur(r);
-        plot(pasTeta, d);
+        plot(d);
         title('Descripteur');
         
         
