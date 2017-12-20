@@ -1,10 +1,11 @@
-function D = descripteur(vDist_Baricentre)
+function D = descripteur(vDist_Baricentre,teta)
 
-    nbCoeffsAGarder = 4;
-    
+    %nbCoeffsAGarder = 2;
+    Coeffs = round((2.0*pi/teta) * 0.5);
+        
     F = fft(vDist_Baricentre);
     
-    F = F(1:nbCoeffsAGarder); % On garde les fréquences faibles
+    F = F(1:Coeffs); % les fréquences faibles
     f0 = abs(F(1)); % normaliser
     
     D = abs(F) ./ f0;
