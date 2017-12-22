@@ -1,16 +1,17 @@
-function recall = recall_precision(reqLabel, listLabel)
+function recall = recall_precision(label_db, listLabel)
 
-cpt = 0;
-i = 1;
+    cpt = 0;
+    im = 1;
 
-recall = zeros(1, 19);
-X=size(listLabel, 1);
-    while ( (cpt < 19) && (i <= size(listLabel, 1)) )
-        if (strcmp(reqLabel, listLabel{i}))
+    recall = zeros(1, 19);
+    X=size(listLabel, 1);
+    
+    while ( (cpt < 19) && (im <= size(listLabel, 1)) )
+        if (strcmp(label_db, listLabel{im}))
             cpt = cpt +1;
-            recall(1, cpt) = (double(cpt) / double(i))*100.0;
+            recall(1, cpt) = (double(cpt) / double(im))*100.0;
         end
-        i = i +1;
+        im = im +1;
     end
 
 end
