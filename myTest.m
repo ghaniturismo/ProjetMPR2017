@@ -1,66 +1,93 @@
-function  myTest()
+% recall et precision sont des matrices  de tailles identiques num_ref X 19 
+% où num_ref est le nombre d'objets de référence (le nombre d'images requêtes) 
+% et 19 est le nombre d'images à retrouver pour chaque requête
 
-im = logical(imread('./db/apple-12.gif'));
+function [recall, precision] = tests()
+img_db_path = './db/';
+img_db_list = glob([img_db_path, '*.gif']);
 
-teta = pi/16;
+img_db = cell(1);
+label_db = cell(1);
+fd_db = cell(1);
 
-subplot(2,3,1);
+%parametre
+teta = pi/32;
+CoeffsAGarder = floor((2.0*pi/teta) * 0.75);
+pasTeta = 0:teta:2*pi;
 
-    %Barycentre
-    [Y,X] = barycentre(im);
+rDescrDB  = cell(1);
+
+for im = 1:numel(img_db_list)
+    img_db{im} = logical(imread(img_db_list{im}));
+    label_db{im} = get_label(img_db_list{im});
+    clf;
+
+    [Y,X] = barycentre(img_db{im});
+    %On recupere r le vecteur de Distance Au Baricentre
+    [rdb,pCY,pCX]=vecteur_DistanceAuBaricentre(X, Y, img_db{im},teta);
     
-    [r,pCY,pCX]=vecteur_DistanceAuBaricentre(X, Y, im,teta);
-    
-    pasTeta = 0:teta:2*pi;
-    plot(pasTeta,r);
-    title('Courbe de la signature de l image ');
+    rDescrDB{im}=descripteur(rdb,CoeffsAGarder);
+      %waitforbuttonpress
+end
+%**************************************************************************
 
-subplot(2,3,2);
+img_dbq_path = './dbq/';
+img_dbq_list = glob([img_dbq_path, '*.gif']);
 
-    imshow(im); hold on;
-    plot(pCY, pCX, '.R');
-    plot(Y,X, '+G');
-    title('Affichage image');
-    
-subplot(2,3,3);
-        [d]=vecteur_Descripteur(r,teta);
-        plot(d);
-        title('Descripteur');
-
+recall_Moyen = zeros(1, 19);
+for im = 1:numel(img_dbq_list)
         
+    img_dbq = logical(imread(img_dbq_list{im}));
+    label_dbq = get_label(img_dbq_list{im});
+    distEuc=cell(1);
+    disp(label_dbq);
+
+    [Y,X] = barycentre(img_dbq);
+    
+    [rdbq,pCY,pCX]=vecteur_DistanceAuBaricentre(X, Y, img_dbq,teta);
+       
+    rDescrDBQ=descripteur(rdbq,CoeffsAGarder);
+    
+    %recal precision
+    
+   %parcours des images db
+   for i = 1:numel(img_db_list)
+       %calcul descripteur images db
+       distEuc{i} = norm(rDescrDB{i}-rDescrDBQ);
+   end
+   
+    data = [label_db; img_db; distEuc];
+    data=transpose(data);
+    data = sortrows(data, 3);
         
-%                                               Image requête
-% *********************************************************************************************************
-% *********************************************************************************************************
-% *********************************************************************************************************
-% *********************************************************************************************************
-
-
-    imReq = logical(imread('./dbq/apple-1.gif'));
+    recall = recall_precision(label_dbq, label_db);
+    recall_Moyen = recall_Moyen + recall;
     
-
-
-   % [resDescr, indiceLabel, nomLabel] = triDistEuclidienne(vReq, mDescr, label_db);        
     
-subplot(2,3,4);
-
-    [Y,X] = barycentre(imReq);
-    [vReq,pCYreq,pCXreq]=vecteur_DistanceAuBaricentre(X, Y, imReq,teta);
+    subplot(3, 5, 1);
+    imshow(img_dbq);
+    title('Image requête');
     
-    pasTeta = 0:teta:2*pi;
-    plot(pasTeta,vReq);
-    title('Courbe de la signature de l image ');
-
-subplot(2,3,5);
-
-    imshow(imReq); hold on;
-    plot(pCYreq, pCXreq, '.R');
-    plot(Y,X, '+G');
-    title('Affichage image');
+    subplot(3, 5, 2);
+    plot(recall);
     
-subplot(2,3,6);
-        [d2]=vecteur_Descripteur(vReq,teta);
-        plot(d2);
-        title('Descripteur');
+        for i = 6 : 10 
+            subplot(3, 5, i);
+            imshow(data{i-5, 2});
+            title(data{i-5,1});
+        end
     
+    
+    subplot(3, 5, 11:15 );
+    plot(recall_Moyen / im);
+    title('recall moyen');
+    xlabel('ième image trouvée en moyenne');
+    
+    %plot(rDescrDBQ{im});
+    %title('Descripteur DBQ');
+    drawnow();
+    waitforbuttonpress
+end
+
+
 end

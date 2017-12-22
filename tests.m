@@ -5,42 +5,93 @@
 function [recall, precision] = tests()
 img_db_path = './db/';
 img_db_list = glob([img_db_path, '*.gif']);
+
 img_db = cell(1);
 label_db = cell(1);
 fd_db = cell(1);
 figure();
 
-teta = pi/34;
+%parametre
+teta = pi/2;
+CoeffsAGarder = floor((2.0*pi/teta) * 0.75);
 pasTeta = 0:teta:2*pi;
 
-for im = 1:numel(img_db_list);
+rDescrDB  = cell(1);
+
+for im = 1:numel(img_db_list)
     img_db{im} = logical(imread(img_db_list{im}));
-
-    %Barycentre
-   	[bary_x, bary_y]=find(img_db{im}==1);
-    X=round(mean(bary_x));
-    Y=round(mean(bary_y));
-
     label_db{im} = get_label(img_db_list{im});
     clf;
-    disp(label_db{im});
-    subplot(2,2,1);
-        [r, pCX, pCY]=getSignature(X, Y, img_db{im},teta);
-        plot(r);
-        title('Signature');
+    %disp(label_db{im}); 
+    %drawnow();
     
-    subplot(2,2,2);
-        imshow(img_db{im}); hold on;
-        plot(pCY, pCX, '+B');% Les points du countours en Bleu
-        plot(Y,X, '*G');     % Le barycentre en vert
-        title('Image');
+%subplot(2,3,1);
+
+    %Barycentre
+    [Y,X] = barycentre(img_db{im});
+    %On recupere r le vecteur de Distance Au Baricentre
+    [rdb,pCY,pCX]=vecteur_DistanceAuBaricentre(X, Y, img_db{im},teta);
     
-    subplot(2,2,3);
-        [d]=descripteur(r);
-        plot(d);
-        title('Descripteur');
-        
-        
-    drawnow();
+    %plot(pasTeta,r);
+    %title('Signature de l image ');
+
+%subplot(2,3,2);
+
+    %imshow(img_db{im}); hold on;
+    %plot(pCY, pCX, '.R');
+    %plot(Y,X, '+G');
+    %title('Affichage image');
+    %drawnow();
+%subplot(2,3,3);
+    rDescrDB{im}=descripteur(rdb,CoeffsAGarder);
+    %plot(rDescrDB{im});
+    %title('Descripteur');    
+    
+    %waitforbuttonpress
+end
+%**************************************************************************
+%**************************************************************************
+%**************************************************************************
+
+img_dbq_path = './dbq/';
+img_dbq_list = glob([img_dbq_path, '*.gif']);
+rDescrDBQ = cell(1);
+
+for im = 1:numel(img_dbq_list)
+        distEuc=cell(1);
+    img_dbq{im} = logical(imread(img_dbq_list{im}));
+    label_dbq{im} = get_label(img_dbq_list{im});
+    clf;
+
+    [Y,X] = barycentre(img_dbq{im});
+    
+    [rdbq,pCY,pCX]=vecteur_DistanceAuBaricentre(X, Y, img_dbq{im},teta);
+       
+    rDescrDBQ{im}=descripteur(rdbq,CoeffsAGarder);
+    
+    %recal precision
+    
+    %[resDescr, indiceLabel, nomLabel] = triDistEuclidienne(rDescrDBQ{im}, rDescrDB, label_db);
+    
+   %parcours des images db
+   for i = 1:numel(img_db_list)
+       %calcul descripteur images db
+       distEuc{i} = norm(rDescrDB{i}-rDescrDBQ);
+   end
+   
+   data = [label_db; im_db; distEuc];
+   data=transpose(data);
+   data = sortrows(data, 3);
+    
+    
+    
+    recall = recall_precision(label_dbq, nomLabel);
+    
+    %plot(rDescrDBQ{im});
+    %title('Descripteur DBQ');
+    
     waitforbuttonpress
+end
+
+
 end
