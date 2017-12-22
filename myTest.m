@@ -59,8 +59,10 @@ for im = 1:numel(img_dbq_list)
     data = [label_db; img_db; distEuc];
     data=transpose(data);
     data = sortrows(data, 3);
+    
+    dataLabeldb = data(:,1);
         
-    recall = recall_precision(label_dbq, label_db);
+    recall = recall_precision(label_dbq,dataLabeldb);
     recall_Moyen = recall_Moyen + recall;
     
     
