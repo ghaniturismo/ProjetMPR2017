@@ -1,10 +1,14 @@
-function D = descripteur(vDist_Baricentre,CoeffsAGarder)
-      
-    F = fft(vDist_Baricentre);
+function D = descripteur(vDist_Barycentre,CoeffsAGarder)
     
-    F = F(1:CoeffsAGarder); % les fréquences faibles
-    f0 = abs(F(1)); % normaliser
+    %Recuperation de la transformee de Fourier du vecteur de distance 
+    %au barycentre
+    F = fft(vDist_Barycentre);
     
+    %Les fréquences faibles a garder 
+    F = F(1:CoeffsAGarder);
+    
+    %Normalisation
+    f0 = abs(F(1));
     D = abs(F) ./ f0; 
     
 end

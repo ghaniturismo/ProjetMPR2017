@@ -1,10 +1,10 @@
-function [d,pCX,pCY] = getSignature(XCentre, YCentre,img, teta)
+function [d,pCX,pCY] = getSignature(xCentre, yCentre,img, teta)
     
     pCY = [];
     pCX = [];
     bool = false;
-    positionX = XCentre;
-    positionY = YCentre;
+    positionX = xCentre;
+    positionY = yCentre;
     pasX = cos(teta);
     pasY = sin(teta);    
     [tailleY, tailleX] = size(img);
@@ -23,6 +23,8 @@ function [d,pCX,pCY] = getSignature(XCentre, YCentre,img, teta)
         
     end
     
-    d = sqrt( (positionX - XCentre)^2 + (positionY - YCentre)^2 );
+    %Calcul de la distance euclidienne entre position (x,y) et
+    %(xCentre,yCentre)
+    d = sqrt( (positionX - xCentre)^2 + (positionY - yCentre)^2 );
     
 end

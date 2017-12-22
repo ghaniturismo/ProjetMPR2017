@@ -1,4 +1,4 @@
-% Calcule du barycentre d'une matrice (image) qui a des valeur 0 et 1.
+% Calcul du barycentre d'une matrice (image) qui a des valeurs 0 et 1.
 function [y, x] = barycentre(img)
 
     %Barycentre

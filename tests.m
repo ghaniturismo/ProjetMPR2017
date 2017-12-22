@@ -21,36 +21,51 @@ function [recall, precision] = tests()
     %parametre
     teta = pi/128;
     CoeffsAGarder = floor((2.0*pi/teta) * 0.75);
-    pasTeta = 0:teta:2*pi;
-
+    
+    %inititalisation du descripteur db
     rDescrDB  = cell(1);
-
+    
+    %Parcourt de la liste des images de db
     for im = 1:sizeImgDB
         img_db{im} = logical(imread(img_db_list{im}));
         label_db{im} = get_label(img_db_list{im});
-        clf;
-
+        disp(label_db{im});
+        
+        %Recuperation du barycentre de l'image
         [Y,X] = barycentre(img_db{im});
-        %On recupere r le vecteur de Distance Au Baricentre
+        
+        %Recuperation du vecteur de Distance Au Baricentre rdb
         [rdb,pCY,pCX]=vecteur_DistanceAuBaricentre(X, Y, img_db{im},teta);
-
+        
+        %Recuperation du vecteur descripteur du vecteur rdb
         rDescrDB{im}=descripteur(rdb,CoeffsAGarder);
 
     end
 
-    recall_Moyen = zeros(1, 19);
+    %Inititalisation du recall
+    recall = zeros(1, 19);
+    
+    %Parcourt de la liste des images de dbq
     for im = 1:sizeImgDBQ
-
         img_dbq = logical(imread(img_dbq_list{im}));
         label_dbq = get_label(img_dbq_list{im});
+        clf;
+        
+        %Inititalisation de la distance euclidienne du descripteur db et du
+        %descripteur dbq
         distEuc=cell(1);
+        
         disp(label_dbq);
+        %Inititalisation de la precision
+        precision = zeros(1, 19);
 
+        %Recuperation du barycentre de l'image
         [Y,X] = barycentre(img_dbq);
 
+        %Recuperation du vecteur de Distance Au Baricentre rdbq
         [rdbq,pCY,pCX]=vecteur_DistanceAuBaricentre(X, Y, img_dbq,teta);
 
-        %calcul du descripteur des images db   
+        %Recuperation du vecteur descripteur du vecteur rdbq   
         rDescrDBQ=descripteur(rdbq,CoeffsAGarder);
 
         % Calcul de la distance euclidienne du descripteur db
@@ -59,38 +74,45 @@ function [recall, precision] = tests()
             distEuc{i} = norm(rDescrDB{i}-rDescrDBQ);
         end
 
-        data = [label_db; img_db; distEuc];
-        data = transpose(data);
-        data = sortrows(data, 3);
+        %Tri des distances euclidiennes distEuc par ordre croissant
+        vect_tmp = [label_db; img_db; distEuc];
+        vect_tmp = transpose(vect_tmp);
+        vect_tmp = sortrows(vect_tmp, 3);
         
-        %Prendre le premier vecteur qui correspond au Label des images 
-        dataLabeldb = data(:,1);
+        %Recuperation du premier vecteur qui correspond au Label des images 
+        vect_Labeldb = vect_tmp(:,1);
         
         %recall precession
-        recall = recall_precision(label_dbq,dataLabeldb);
-        recall_Moyen = recall_Moyen + recall;
+        precision = recall_precision(label_dbq,vect_Labeldb);
+        recall = recall + precision;
 
+        %Affichages 
         subplot(3, 5, 1);
         imshow(img_dbq);
-        title('Image requête');
+        title('Requete');
 
+        subplot(3, 5, 2);
+        imshow(img_dbq); hold on;
+        plot(pCY, pCX, '.R');
+        plot(Y,X, '+G');
+        title('Signature');
+        
         subplot(3, 5, 3:5);
-        plot(recall);
-
+        plot(precision);
+        title('Precision');
+        
         for i = 6 : 10 
             subplot(3, 5, i);
-            imshow(data{i-5, 2});
-            title(data{i-5,1});
+            imshow(vect_tmp{i-5, 2});
+            title(vect_tmp{i-5,1});
         end
 
         subplot(3, 5, 11:15 );
-        plot(recall_Moyen / im);
-        title('recall moyen');
-        xlabel('ième image trouvée en moyenne');
+        plot(recall / im);
+        title('Recall Precision');
 
         drawnow();
         waitforbuttonpress
     end
-
 
 end
