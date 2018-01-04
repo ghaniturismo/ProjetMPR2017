@@ -19,8 +19,8 @@ function [recall, precision] = tests()
     label_db = cell(1);
 
     %parametre
-    teta = pi/128;
-    CoeffsAGarder = floor((2.0*pi/teta) * 0.75);
+    teta = pi/64;
+    CoeffsAGarder = floor((2.0*pi/teta) * 0.77);
     
     %inititalisation du descripteur db
     rDescrDB  = cell(1);
@@ -112,7 +112,7 @@ function [recall, precision] = tests()
         title('Recall Precision');
 
         drawnow();
-        waitforbuttonpress
+        waitforbuttonpress;
     end
 
 end
